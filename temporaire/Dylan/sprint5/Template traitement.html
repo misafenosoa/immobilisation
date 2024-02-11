@@ -1,0 +1,15 @@
+<%@ page import="java.sql.SQLException" %>
+<%@ page import="java.io.IOException" %>
+<%@ page import="java.net.URLEncoder" %>
+<%@ page import="main.DAO.*" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String typeRoute = request.getParameter("type_route");
+        try {
+// ddddddddd
+            response.sendRedirect("affichage1.jsp?message=" + URLEncoder.encode("TypeRoute inserted successfully!", "UTF-8"));
+        } catch (Exception e ) {
+            response.sendRedirect("affichage1.jsp?error=" + URLEncoder.encode("Error inserting TypeRoute: " + e.getMessage(), "UTF-8"));
+        }
+ 
+%>
