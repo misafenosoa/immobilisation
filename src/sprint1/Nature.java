@@ -21,11 +21,14 @@ public class Nature extends ORM<Nature> {
 
         StringBuilder options = new StringBuilder();
         for (Nature materiel : materiels) {
-            options.append("<option value=\"")
+            options.append(
+                    "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + ">")
+                    .append("<option value=\"")
                     .append(materiel.getNatureId())
                     .append("\">")
                     .append(materiel.getNature())
-                    .append("</option>");
+                    .append("</option>")
+                    .append("</select>");
         }
 
         return options.toString();

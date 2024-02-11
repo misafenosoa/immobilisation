@@ -19,11 +19,13 @@ public class TypeAmortissement extends ORM<TypeAmortissement> {
 
         StringBuilder options = new StringBuilder();
         for (TypeAmortissement materiel : materiels) {
-            options.append("<option value=\"")
+            options .append("<select class="+'"'+"form-control"+'"'+ "id="+'"'+"exampleSelectGender"+'"'+">")
+                    .append("<option value=\"")
                     .append(materiel.getTypeAmortissementId())
                     .append("\">")
                     .append(materiel.getTypeAmortissementId())
-                    .append("</option>");
+                    .append("</option>")
+                    .append("</select>");
         }
 
         return options.toString();
