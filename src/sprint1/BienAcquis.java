@@ -17,9 +17,10 @@ public class BienAcquis extends ORM<BienAcquis> {
     String description;
     String idtypeamortissement;
     Integer anneeamorti;
+    Double achat ;
 
     public static void insert(String dateacquis, String serie, String villeacquis, String depot, String natureid,
-            String description, String idtypeamortissement, String anneeamorti) throws Exception {
+            String description, String idtypeamortissement, String anneeamorti ,String achat) throws Exception {
         String url = "jdbc:postgresql://localhost:5432/Immobilisation";
         String user = "postgres";
         String password = "post";
@@ -35,9 +36,13 @@ public class BienAcquis extends ORM<BienAcquis> {
         bienacquis.setDescription(description);
         bienacquis.setIdtypeamortissement(idtypeamortissement);
         bienacquis.setAnneeamorti(Integer.parseInt(anneeamorti));
-
+        bienacquis.setAchat(Double.parseDouble(achat));
         bienacquis.insert(connection, false);
 
+    }
+
+    public Double getTauxLineaireAmortissementLineaire(){
+        return 100. / anneeamorti ;
     }
 
     public String getBienacquisid() {
@@ -110,6 +115,14 @@ public class BienAcquis extends ORM<BienAcquis> {
 
     public void setAnneeamorti(Integer anneeamorti) {
         this.anneeamorti = anneeamorti;
+    }
+
+    public Double getAchat() {
+        return achat;
+    }
+
+    public void setAchat(Double achat) {
+        this.achat = achat;
     }
 
 }

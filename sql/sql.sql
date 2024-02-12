@@ -25,7 +25,7 @@ insert into typeamortissementregle values(default , 'degressif',2,4,1.25),(defau
 
 create table bienacquis(
     bienacquisid text primary key,
-    dateacquis timestamp default(now()),
+    dateacquis date default(now()),
     serie serial,
     villeacquis text,
     depot text,
@@ -33,7 +33,19 @@ create table bienacquis(
     description text,
     idtypeamortissement varchar(250),
     anneeamorti integer, 
+    achat double precision ,
     foreign key (idtypeamortissement) references typeamortissement,
     foreign key (natureid) references nature(natureid)
 );
 
+-- 1 : mi creer view mi generer anneemisesy 1 a anneeamorti
+
+-- 2 : 
+
+
+
+
+________________________________________________________________________________
+Année | Base | Taux dégressif | Taux linéaire | Annuité | Valeur nette comptable|
+________________________________________________________________________________  
+ 
