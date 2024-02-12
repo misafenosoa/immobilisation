@@ -45,6 +45,10 @@ public class BienAcquis extends ORM<BienAcquis> {
         return 100. / anneeamorti ;
     }
 
+    public Double geTauxLineaireAmortissement(Double anneeRestante){
+        return 100. / anneeRestante ;
+    }
+
     public String getBienacquisid() {
         return bienacquisid;
     }
@@ -124,5 +128,25 @@ public class BienAcquis extends ORM<BienAcquis> {
     public void setAchat(Double achat) {
         this.achat = achat;
     }
+
+    public Double getCoefficientDegressif() throws Exception{
+        String url = "jdbc:postgresql://localhost:5432/Immobilisation";
+        String user = "postgres";
+        String password = "post";
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(url, user, password);
+            Typeamortissementregle t = new Typeamortissementregle();
+            return t.selectWhere(connection, false, "debut<="+getAnneeamorti()+" and fin>"+getAnneeamorti())[0].getCoefficient();
+
+        } finally{
+            if (!connection.isClosed()) {
+                connection.close();
+            }
+        }
+
+    }
+
+
 
 }
