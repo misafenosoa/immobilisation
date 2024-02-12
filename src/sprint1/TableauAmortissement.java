@@ -132,6 +132,38 @@ public class TableauAmortissement {
         return t;
     }
 
+
+    public static TableauAmortissement[] getDegressif(BienAcquis bienAcquis) throws Exception{
+        ArrayList<TableauAmortissement> lst = new ArrayList<>();
+        int loop= bienAcquis.getAnneeamorti() ;
+        Double tauxDegressif = bienAcquis.getCoefficientDegressif()*1/bienAcquis.getAnneeamorti();
+
+        TableauAmortissement v = new TableauAmortissement();
+        v.setAnnee(1);
+        v.setBase(bienAcquis.getAchat());
+        v.setTauxLineaire(bienAcquis.getTauxLineaireAmortissementLineaire());   
+        v.setTauxDegressif(tauxDegressif);
+        Double tauxApplique= Double.max(v.getTauxDegressif(), v.getTauxLineaire());
+        v.setAnnuite(v.getBase()*tauxApplique);
+        v.setValeurNetteComptable(v.getBase() - v.getAnnuite());
+
+        Double anneerestante = bienAcquis.getAnneeamorti()-1.;
+
+        lst.add(v);
+        for (int i = 2; i < loop; i++) {
+            TableauAmortissement v2 = new TableauAmortissement();
+            v2.setAnnee(i);
+            v2.setBase(v.getValeurNetteComptable());
+            v2.setTauxLineaire(100./anneerestante);
+            v2.setTauxDegressif(tauxDegressif);
+            tauxApplique= Double.max(v2.getTauxDegressif(), v2.getTauxLineaire());
+            v2.setAnnuite(v2.getBase()*tauxApplique);
+            v2.setValeurNetteComptable(v2.getBase() - v2.getAnnuite());
+            anneerestante-=1;
+        }
+        return lst.toArray(new TableauAmortissement[lst.size()]);
+    }
+
     public Integer getAnnee() {
         return annee;
     }
