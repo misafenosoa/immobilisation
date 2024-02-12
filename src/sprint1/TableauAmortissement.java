@@ -52,8 +52,8 @@ public class TableauAmortissement {
 
     }
 
-    public static String getHTMLDegressif(BienAcquis bienAcquis) {
-        TableauAmortissement[] lst = getDegressifs(bienAcquis);
+    public static String getHTMLDegressif(BienAcquis bienAcquis) throws Exception {
+        TableauAmortissement[] lst = getDegressif(bienAcquis);
         // Génération du tableau HTML
         StringBuilder htmlTable = new StringBuilder();
         htmlTable.append("<div class=\"table-responsive\">");
@@ -101,10 +101,7 @@ public class TableauAmortissement {
 
     }
 
-    private static TableauAmortissement[] getDegressifs(BienAcquis bienAcquis) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDegressifs'");
-    }
+
 
     public static TableauAmortissement[] getLineaires(BienAcquis bienAcquis) {
         ArrayList<TableauAmortissement> lst = new ArrayList<>();
