@@ -1,5 +1,7 @@
 package sprint1;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 
 public class TableauAmortissement {
@@ -10,6 +12,26 @@ public class TableauAmortissement {
     Double tauxLineaire;
     Double annuite;
     Double valeurNetteComptable;
+
+    public static String getTableauAmortissementComplet(String bienAcquisId) throws Exception{
+        String url = "jdbc:postgresql://localhost:5432/Immobilisation";
+        String user = "postgres";
+        String password = "post";
+        Connection connection = null;
+        try{
+            connection = DriverManager.getConnection(url, user, password);
+            BienAcquis b= new BienAcquis().selectWhere(connection, false, "bienacquisid='"+bienAcquisId.trim()+"'")[0];
+            if (b.getIdtypeamortissement().equalsIgnoreCase("lineaire")) {
+                return getHTMLLineaire(b);
+            }else{
+                return getHTMLDegressif(b);
+            }
+        }finally{
+            try {
+                connection.close();
+            } catch (Exception e) {}
+        }
+    }
 
     public static String getHTMLLineaire(BienAcquis bienAcquis) {
         TableauAmortissement[] lst = getLineaires(bienAcquis);

@@ -56,7 +56,7 @@ values
     ('4', '2022-08-10', 'maj', 'entrepot3', 'table', 'solide et durable, parfait pour les réunions en salle de conférence', 'lineaire', 5, 300),
     ('5', '2022-11-28', 'tana', 'entrepot2', 'clavier', 'rétroéclairage LED, touches silencieuses pour une frappe confortable', 'lineaire', 5, 100);
 
-
+    ('6','2022-11-28' , 'tana' ,'entrepot4' ,'ordinateur' ,'blabla' ,'lineaire' ,5 ,3500.00);
 -- 1 : mi creer view mi generer anneemisesy 1 a anneeamorti
 
 -- 2 : 
