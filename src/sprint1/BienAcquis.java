@@ -129,17 +129,17 @@ public class BienAcquis extends ORM<BienAcquis> {
         BienAcquis[] materiels = new BienAcquis().select(connection, false);
 
         StringBuilder options = new StringBuilder();
+        options.append(
+            "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + ">");
         for (BienAcquis materiel : materiels) {
-            options.append(
-                    "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + ">")
+                options
                     .append("<option value=\"")
                     .append(materiel.getBienacquisid())
                     .append("\">")
                     .append(materiel.getNatureid())
-                    .append("</option>")
-                    .append("</select>");
+                    .append("</option>") ;
         }
-
+        options.append("</select>");
         return options.toString();
 
     }
