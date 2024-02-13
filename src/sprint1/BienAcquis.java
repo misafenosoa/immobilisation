@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.DriverManager;
 
 import orm.ORM;
+import sprint2.Bienconfigurationpardefaut;
+import sprint2.Historisationconfiguration;
 
 public class BienAcquis extends ORM<BienAcquis> {
 
@@ -24,29 +26,80 @@ public class BienAcquis extends ORM<BienAcquis> {
         String url = "jdbc:postgresql://localhost:5432/Immobilisation";
         String user = "postgres";
         String password = "post";
+        Connection connection = DriverManager.getConnection(url, user, password);
+
+        try{
+            BienAcquis bienacquis = new BienAcquis();
+            bienacquis.setDateacquis(Date.valueOf(dateacquis));
+            bienacquis.setSerie(Integer.parseInt(serie));
+            bienacquis.setVilleacquis(villeacquis);
+            bienacquis.setDepot(depot);
+            bienacquis.setNatureid(natureid);
+            bienacquis.setDescription(description);
+            bienacquis.setIdtypeamortissement(idtypeamortissement);
+            bienacquis.setAnneeamorti(Integer.parseInt(anneeamorti));
+            bienacquis.setAchat(Double.parseDouble(achat));
+            String codeCompta = new Nature().selectWhere(connection, true, "natureId='"+natureid+"'")[0].getCompteCode();
+            bienacquis.setBienacquisid(natureid+"/"+((int)Math.random()) +"/"+dateacquis+"/"+codeCompta+"/"+villeacquis+"/"+depot);
+            bienacquis.insert(connection, true);
+    
+    
+            Bienconfigurationpardefaut[] bienconfigurationpardefauts = new Bienconfigurationpardefaut().selectWhere(connection, true, "natureidmere='"+bienacquis.getNatureid()+"'");
+    
+            for (Bienconfigurationpardefaut bienconfigurationpardefaut : bienconfigurationpardefauts) {
+                Historisationconfiguration s = new Historisationconfiguration();
+    
+                s.setBienacquisid(bienacquis.getBienacquisid());
+                s.setNaturefille(bienconfigurationpardefaut.getNaturefille());
+                s.setQuantite(bienconfigurationpardefaut.getQuantite());
+    
+                s.insert(connection, true);
+            }
+            connection.commit();
+        }
+        catch(Exception e){
+            connection.rollback();
+        }
+        finally{
+            connection.close();
+        }
+    }
+
+    public static String getOptions() throws Exception {
+        String url = "jdbc:postgresql://localhost:5432/immobilisation";
+        String user = "postgres";
+        String password = "post";
         Connection connection = null;
 
-        BienAcquis bienacquis = new BienAcquis();
         connection = DriverManager.getConnection(url, user, password);
-        bienacquis.setDateacquis(Date.valueOf(dateacquis));
-        bienacquis.setSerie(Integer.parseInt(serie));
-        bienacquis.setVilleacquis(villeacquis);
-        bienacquis.setDepot(depot);
-        bienacquis.setNatureid(natureid);
-        bienacquis.setDescription(description);
-        bienacquis.setIdtypeamortissement(idtypeamortissement);
-        bienacquis.setAnneeamorti(Integer.parseInt(anneeamorti));
-        bienacquis.setAchat(Double.parseDouble(achat));
-        bienacquis.insert(connection, false);
+        BienAcquis[] materiels = new BienAcquis().select(connection, false);
 
+        StringBuilder options = new StringBuilder();
+        for (BienAcquis materiel : materiels) {
+            options.append(
+                    "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + ">")
+                    .append("<option value=\"")
+                    .append(materiel.getBienacquisid())
+                    .append("\">")
+                    .append(materiel.getNatureid())
+                    .append("</option>")
+                    .append("</select>");
+        }
+
+        return options.toString();
+
+    }
+
+    public Double getMoisUtilisation(){
+        return 13- Double.parseDouble(dateacquis.toString().split("-")[1]) ;
     }
 
     public Double getTauxLineaireAmortissementLineaire(){
-        return 100. / anneeamorti ;
+        return 100. / anneeamorti /100.;
     }
 
     public Double geTauxLineaireAmortissement(Double anneeRestante){
-        return 100. / anneeRestante ;
+        return 100. / anneeRestante /100.;
     }
 
     public String getBienacquisid() {
@@ -130,14 +183,14 @@ public class BienAcquis extends ORM<BienAcquis> {
     }
 
     public Double getCoefficientDegressif() throws Exception{
-        String url = "jdbc:postgresql://localhost:5432/Immobilisation";
+        String url = "jdbc:postgresql://localhost:5432/immobilisation";
         String user = "postgres";
         String password = "post";
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(url, user, password);
             Typeamortissementregle t = new Typeamortissementregle();
-            return t.selectWhere(connection, false, "debut<="+getAnneeamorti()+" and fin>"+getAnneeamorti())[0].getCoefficient();
+            return t.selectWhere(connection, false, "debut<="+getAnneeamorti()+" and fin>="+getAnneeamorti())[0].getCoefficient();
 
         } finally{
             if (!connection.isClosed()) {

@@ -14,7 +14,7 @@ public class TableauAmortissement {
     Double valeurNetteComptable;
 
     public static String getTableauAmortissementComplet(String bienAcquisId) throws Exception{
-        String url = "jdbc:postgresql://localhost:5432/Immobilisation";
+        String url = "jdbc:postgresql://localhost:5432/immobilisation";
         String user = "postgres";
         String password = "post";
         Connection connection = null;
@@ -41,16 +41,10 @@ public class TableauAmortissement {
         htmlTable.append("<table class=\"table table-hover\">");
         htmlTable.append("<thead>");
         htmlTable.append("<tr>");
-        htmlTable.append("<th>Annee</th>");
-        htmlTable.append("</tr>");
-        htmlTable.append("<tr>");
-        htmlTable.append("<th>Base</th>");
-        htmlTable.append("</tr>");
-        htmlTable.append("<tr>");
-        htmlTable.append("<th>Annuite</th>");
-        htmlTable.append("</tr>");
-        htmlTable.append("<tr>");
-        htmlTable.append("<th>Valeur Nette Comptable</th>");
+            htmlTable.append("<th>Annee</th>");
+            htmlTable.append("<th>Base</th>");
+            htmlTable.append("<th>Annuite</th>");
+            htmlTable.append("<th>Valeur Nette Comptable</th>");
         htmlTable.append("</tr>");
         htmlTable.append("</thead>");
         htmlTable.append("<tbody>");
@@ -83,20 +77,10 @@ public class TableauAmortissement {
         htmlTable.append("<thead>");
         htmlTable.append("<tr>");
         htmlTable.append("<th>Annee</th>");
-        htmlTable.append("</tr>");
-        htmlTable.append("<tr>");
         htmlTable.append("<th>Base</th>");
-        htmlTable.append("</tr>");
-        htmlTable.append("<tr>");
         htmlTable.append("<th>Taux Degressif</th>");
-        htmlTable.append("</tr>");
-        htmlTable.append("<tr>");
         htmlTable.append("<th>Taux Lineaire</th>");
-        htmlTable.append("</tr>");
-        htmlTable.append("<tr>");
         htmlTable.append("<th>Annuite</th>");
-        htmlTable.append("</tr>");
-        htmlTable.append("<tr>");
         htmlTable.append("<th>Valeur Nette Comptable</th>");
         htmlTable.append("</tr>");
         htmlTable.append("</thead>");
@@ -132,12 +116,12 @@ public class TableauAmortissement {
         v.setAnnee(1);
         v.setBase(bienAcquis.getAchat());
         v.setTauxLineaire(bienAcquis.getTauxLineaireAmortissementLineaire());
-        v.setAnnuite(v.getBase() * v.getTauxLineaire() / 100);
+        v.setAnnuite(v.getBase() * v.getTauxLineaire() );
         v.setValeurNetteComptable(v.getBase() - v.getAnnuite());
         lst.add(v);
         Double tauxLinear = v.getTauxLineaire();
         for (int i = 2; i <= loop; i++) {
-            lst.add(getLineaire(i, lst.get(lst.size() - 1).getBase(), tauxLinear));
+            lst.add(getLineaire(i, lst.get(lst.size() - 1).getValeurNetteComptable(), tauxLinear));
         }
         return lst.toArray(new TableauAmortissement[lst.size()]);
     }
@@ -148,6 +132,7 @@ public class TableauAmortissement {
         t.setAnnuite(base * tauxLineaire);
         t.setBase(base);
         t.setTauxLineaire(tauxLineaire);
+        t.setValeurNetteComptable(t.getBase()-t.getAnnuite());
         return t;
     }
 
@@ -163,22 +148,23 @@ public class TableauAmortissement {
         v.setTauxLineaire(bienAcquis.getTauxLineaireAmortissementLineaire());   
         v.setTauxDegressif(tauxDegressif);
         Double tauxApplique= Double.max(v.getTauxDegressif(), v.getTauxLineaire());
-        v.setAnnuite(v.getBase()*tauxApplique);
+        v.setAnnuite(v.getBase()*tauxApplique*bienAcquis.getMoisUtilisation()/12);
         v.setValeurNetteComptable(v.getBase() - v.getAnnuite());
 
         Double anneerestante = bienAcquis.getAnneeamorti()-1.;
 
         lst.add(v);
-        for (int i = 2; i < loop; i++) {
+        for (int i = 2; i <= loop; i++) {
             TableauAmortissement v2 = new TableauAmortissement();
             v2.setAnnee(i);
-            v2.setBase(v.getValeurNetteComptable());
-            v2.setTauxLineaire(100./anneerestante);
+            v2.setBase(lst.get(lst.size()-1).getValeurNetteComptable());
+            v2.setTauxLineaire(100./anneerestante/100.);
             v2.setTauxDegressif(tauxDegressif);
             tauxApplique= Double.max(v2.getTauxDegressif(), v2.getTauxLineaire());
             v2.setAnnuite(v2.getBase()*tauxApplique);
             v2.setValeurNetteComptable(v2.getBase() - v2.getAnnuite());
             anneerestante-=1;
+            lst.add(v2);
         }
         return lst.toArray(new TableauAmortissement[lst.size()]);
     }
