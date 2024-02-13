@@ -20,7 +20,7 @@ public class Nature extends ORM<Nature> {
         Nature[] materiels = new Nature().select(connection, false);
         StringBuilder options = new StringBuilder();
         options.append(
-                "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + ">") ;
+                "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + " name='nature'>") ;
 
         for (Nature materiel : materiels) {
             options

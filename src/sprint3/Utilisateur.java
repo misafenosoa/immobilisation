@@ -19,7 +19,7 @@ public class Utilisateur extends ORM<Utilisateur>{
         Utilisateur[] materiels = new Utilisateur().select(connection, false);
         StringBuilder options = new StringBuilder();
         options.append(
-                "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + ">") ;
+                "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + " name='utilisateur'>") ;
 
         for (Utilisateur materiel : materiels) {
             options

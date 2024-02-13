@@ -3,12 +3,14 @@ package test.sprint1;
 import sprint1.BienAcquis;
 import sprint1.Nature;
 import sprint1.TableauAmortissement;
+import sprint1.TypeAmortissement;
 
 public class Sprint1 {
     public static void main(String[] args) throws Exception {
         // lister les natures
+        System.out.println(TypeAmortissement.getOptions());
 
-        System.out.println(Nature.getOptions());
+        // System.out.println(Nature.getOptions());
 
         // lister les bien acquis
 
