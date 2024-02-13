@@ -71,9 +71,52 @@ public class BienAcquis extends ORM<BienAcquis> {
         }
     }
 
-    // public static void insert (String dateacquis, String serie, String villeacquis, String depot, String natureid,
-    // String description, String idtypeamortissement, String anneeamorti ,String achat , )
 
+    public void insert(String dateacquis, String villeacquis, String depot, String natureid,
+        String description, String idtypeamortissement, String anneeamorti ,String achat, String etat , String dateDebutService,
+        String [] natureFille , String [] quantite) throws Exception {
+
+            String url = "jdbc:postgresql://localhost:5432/immobilisation";
+            String user = "postgres";
+            String password = "post";
+            Connection connection = DriverManager.getConnection(url, user, password);
+    
+            try{
+                ResultSet r = connection.createStatement().executeQuery("SELECT nextval('bienacquis_serie_seq')");
+                r.next();
+                Integer id=  r.getInt(1);
+                BienAcquis bienacquis = new BienAcquis();
+                bienacquis.setDateacquis(Date.valueOf(dateacquis));
+                bienacquis.setVilleacquis(villeacquis);
+                bienacquis.setDepot(depot);
+                bienacquis.setNatureid(natureid);
+                bienacquis.setDescription(description);
+                bienacquis.setIdtypeamortissement(idtypeamortissement);
+                bienacquis.setAnneeamorti(Integer.parseInt(anneeamorti));
+                bienacquis.setAchat(Double.parseDouble(achat));
+                String codeCompta = new Nature().selectWhere(connection, true, "natureId='"+natureid+"'")[0].getCompteCode();
+                bienacquis.setBienacquisid(natureid+"/"+id +"/"+dateacquis+"/"+codeCompta+"/"+villeacquis+"/"+depot);
+                bienacquis.insert(connection, true);
+
+                for (int i = 0; i < quantite.length; i++) {
+                    Historisationconfiguration s = new Historisationconfiguration();
+                    s.setBienacquisid(bienacquis.getBienacquisid());
+                    s.setNaturefille(natureFille[i]);
+                    s.setQuantite(Double.parseDouble(quantite[i]) );
+        
+                    s.insert(connection, true);
+
+                }
+            }
+            catch(Exception e){
+                connection.rollback();
+                throw e;
+            }
+            finally{
+                connection.close();
+            }
+
+    }
 
 
     public static String getOptions() throws Exception {
