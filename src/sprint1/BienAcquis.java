@@ -3,6 +3,7 @@ package sprint1;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 
 import orm.ORM;
 import sprint2.Bienconfigurationpardefaut;
@@ -23,17 +24,19 @@ public class BienAcquis extends ORM<BienAcquis> {
     Date debutUtilisation;
     Integer etatgeneral;
 
-    public static void insert(String dateacquis, String serie, String villeacquis, String depot, String natureid,
-        String description, String idtypeamortissement, String anneeamorti ,String achat) throws Exception {
-        String url = "jdbc:postgresql://localhost:5432/Immobilisation";
+    public static void insert(String dateacquis, String villeacquis, String depot, String natureid,
+        String description, String idtypeamortissement, String anneeamorti ,String achat, String etat , String dateDebutService) throws Exception {
+        String url = "jdbc:postgresql://localhost:5432/immobilisation";
         String user = "postgres";
         String password = "post";
         Connection connection = DriverManager.getConnection(url, user, password);
 
         try{
+            ResultSet r = connection.createStatement().executeQuery("SELECT nextval('bienacquis_serie_seq')");
+            r.next();
+            Integer id=  r.getInt(1);
             BienAcquis bienacquis = new BienAcquis();
             bienacquis.setDateacquis(Date.valueOf(dateacquis));
-            bienacquis.setSerie(Integer.parseInt(serie));
             bienacquis.setVilleacquis(villeacquis);
             bienacquis.setDepot(depot);
             bienacquis.setNatureid(natureid);
@@ -42,7 +45,7 @@ public class BienAcquis extends ORM<BienAcquis> {
             bienacquis.setAnneeamorti(Integer.parseInt(anneeamorti));
             bienacquis.setAchat(Double.parseDouble(achat));
             String codeCompta = new Nature().selectWhere(connection, true, "natureId='"+natureid+"'")[0].getCompteCode();
-            bienacquis.setBienacquisid(natureid+"/"+((int)Math.random()) +"/"+dateacquis+"/"+codeCompta+"/"+villeacquis+"/"+depot);
+            bienacquis.setBienacquisid(natureid+"/"+id +"/"+dateacquis+"/"+codeCompta+"/"+villeacquis+"/"+depot);
             bienacquis.insert(connection, true);
     
     
@@ -54,18 +57,24 @@ public class BienAcquis extends ORM<BienAcquis> {
                 s.setBienacquisid(bienacquis.getBienacquisid());
                 s.setNaturefille(bienconfigurationpardefaut.getNaturefille());
                 s.setQuantite(bienconfigurationpardefaut.getQuantite());
-    
+                
                 s.insert(connection, true);
             }
             connection.commit();
         }
         catch(Exception e){
             connection.rollback();
+            throw e;
         }
         finally{
             connection.close();
         }
     }
+
+    // public static void insert (String dateacquis, String serie, String villeacquis, String depot, String natureid,
+    // String description, String idtypeamortissement, String anneeamorti ,String achat , )
+
+
 
     public static String getOptions() throws Exception {
         String url = "jdbc:postgresql://localhost:5432/immobilisation";
