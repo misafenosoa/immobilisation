@@ -20,9 +20,11 @@ public class BienAcquis extends ORM<BienAcquis> {
     String idtypeamortissement;
     Integer anneeamorti;
     Double achat ;
+    Date debutUtilisation;
+    Integer etatgeneral;
 
     public static void insert(String dateacquis, String serie, String villeacquis, String depot, String natureid,
-            String description, String idtypeamortissement, String anneeamorti ,String achat) throws Exception {
+        String description, String idtypeamortissement, String anneeamorti ,String achat) throws Exception {
         String url = "jdbc:postgresql://localhost:5432/Immobilisation";
         String user = "postgres";
         String password = "post";
@@ -198,6 +200,22 @@ public class BienAcquis extends ORM<BienAcquis> {
             }
         }
 
+    }
+
+    public Date getDebutUtilisation() {
+        return debutUtilisation;
+    }
+
+    public void setDebutUtilisation(Date debutUtilisation) {
+        this.debutUtilisation = debutUtilisation;
+    }
+
+    public Integer getEtatgeneral() {
+        return etatgeneral;
+    }
+
+    public void setEtatgeneral(Integer etatgeneral) {
+        this.etatgeneral = etatgeneral;
     }
 
 

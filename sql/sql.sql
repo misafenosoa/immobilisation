@@ -37,6 +37,7 @@ create table bienacquis(
     anneeamorti integer, 
     achat double precision ,
     etatgeneral integer default(10),
+    debutUtilisation date ,
     foreign key (idtypeamortissement) references typeamortissement,
     foreign key (natureid) references nature(natureid)
 );

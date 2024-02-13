@@ -16,6 +16,6 @@ public class Sprint1 {
 
         // afficher le tableau d amortissement par bien acquis
 
-        System.out.println(TableauAmortissement.getTableauAmortissementComplet("6"));
+        System.out.println(TableauAmortissement.getTableauAmortissementComplet("5"));
     }
 }

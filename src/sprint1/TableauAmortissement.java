@@ -10,6 +10,7 @@ public class TableauAmortissement {
     Double base;
     Double tauxDegressif;
     Double tauxLineaire;
+    Double montantdesamortissementscumules;
     Double annuite;
     Double valeurNetteComptable;
 
@@ -33,42 +34,49 @@ public class TableauAmortissement {
         }
     }
 
-    public static String getHTMLLineaire(BienAcquis bienAcquis) {
-        TableauAmortissement[] lst = getLineaires(bienAcquis);
-        // Génération du tableau HTML
-        StringBuilder htmlTable = new StringBuilder();
-        htmlTable.append("<div class=\"table-responsive\">");
-        htmlTable.append("<table class=\"table table-hover\">");
-        htmlTable.append("<thead>");
-        htmlTable.append("<tr>");
-            htmlTable.append("<th>Annee</th>");
-            htmlTable.append("<th>Base</th>");
-            htmlTable.append("<th>Annuite</th>");
-            htmlTable.append("<th>Valeur Nette Comptable</th>");
-        htmlTable.append("</tr>");
-        htmlTable.append("</thead>");
-        htmlTable.append("<tbody>");
+    public static String getHTMLLineaire(BienAcquis bienAcquis) throws Exception {
 
-        for (TableauAmortissement amortissement : lst) {
+            TableauAmortissement[] lst = getLineaires(bienAcquis);
+            // Génération du tableau HTML
+            StringBuilder htmlTable = new StringBuilder();
+            htmlTable.append("<div class=\"table-responsive\">");
+            htmlTable.append("<table class=\"table table-hover\">");
+            htmlTable.append("<thead>");
             htmlTable.append("<tr>");
-            htmlTable.append("<td>").append(amortissement.getAnnee()).append("</td>");
-            htmlTable.append("<td>").append(amortissement.getBase()).append("</td>");
-            htmlTable.append("<td>").append(amortissement.getAnnuite()).append("</td>");
-            htmlTable.append("<td>").append(amortissement.getValeurNetteComptable()).append("</td>");
-            // Ajoutez ici d'autres colonnes en fonction de vos besoins
+                htmlTable.append("<th>Annee</th>");
+                htmlTable.append("<th>Base</th>");
+                htmlTable.append("<th>Montant des amortissments cumules</th>");
+                htmlTable.append("<th>Annuite</th>");
+                htmlTable.append("<th>Valeur Nette Comptable</th>");
             htmlTable.append("</tr>");
-        }
+            htmlTable.append("</thead>");
+            htmlTable.append("<tbody>");
+    
+            for (TableauAmortissement amortissement : lst) {
+                htmlTable.append("<tr>");
+                htmlTable.append("<td>").append(amortissement.getAnnee()).append("</td>");
+                htmlTable.append("<td>").append(amortissement.getBase()).append("</td>");
+                htmlTable.append("<td>").append(amortissement.getMontantdesamortissementscumules()).append("</td>");
+                htmlTable.append("<td>").append(amortissement.getAnnuite()).append("</td>");
+                htmlTable.append("<td>").append(amortissement.getValeurNetteComptable()).append("</td>");
+                // Ajoutez ici d'autres colonnes en fonction de vos besoins
+                htmlTable.append("</tr>");
+            }
+    
+            htmlTable.append("</tbody>");
+            htmlTable.append("</table>");
+            htmlTable.append("</div>");
+    
+            // Affichage du tableau HTML généré
+            return (htmlTable.toString());
+    
+        
 
-        htmlTable.append("</tbody>");
-        htmlTable.append("</table>");
-        htmlTable.append("</div>");
-
-        // Affichage du tableau HTML généré
-        return (htmlTable.toString());
 
     }
 
     public static String getHTMLDegressif(BienAcquis bienAcquis) throws Exception {
+        
         TableauAmortissement[] lst = getDegressif(bienAcquis);
         // Génération du tableau HTML
         StringBuilder htmlTable = new StringBuilder();
@@ -110,29 +118,43 @@ public class TableauAmortissement {
 
 
     public static TableauAmortissement[] getLineaires(BienAcquis bienAcquis) {
+
+
         ArrayList<TableauAmortissement> lst = new ArrayList<>();
         int loop = bienAcquis.getAnneeamorti();
+        Double basebe = bienAcquis.getAchat();
         TableauAmortissement v = new TableauAmortissement();
         v.setAnnee(1);
-        v.setBase(bienAcquis.getAchat());
+        v.setBase(basebe);
         v.setTauxLineaire(bienAcquis.getTauxLineaireAmortissementLineaire());
-        v.setAnnuite(v.getBase() * v.getTauxLineaire() );
+        v.setAnnuite(basebe * v.getTauxLineaire() * (12 -Double.parseDouble(bienAcquis.getDebutUtilisation().toString().split("-")[1])+1) *30/360. );
         v.setValeurNetteComptable(v.getBase() - v.getAnnuite());
+        v.setMontantdesamortissementscumules(v.getAnnuite());
         lst.add(v);
         Double tauxLinear = v.getTauxLineaire();
         for (int i = 2; i <= loop; i++) {
-            lst.add(getLineaire(i, lst.get(lst.size() - 1).getValeurNetteComptable(), tauxLinear));
+            lst.add(getLineaire(i, basebe, tauxLinear ,lst.get(lst.size() - 1).getMontantdesamortissementscumules()));
         }
+        TableauAmortissement v2 = new TableauAmortissement();
+        v2.setAnnee(loop);
+        v2.setBase(basebe);
+        v2.setAnnuite(basebe * tauxLinear * (12 -Double.parseDouble(bienAcquis.getDebutUtilisation().toString().split("-")[1])+1) *30/360. );
+        v2.setTauxLineaire(tauxLinear);
+        v2.setMontantdesamortissementscumules(v2.getAnnuite()+lst.get(lst.size() - 1).getMontantdesamortissementscumules());
+        v2.setValeurNetteComptable(basebe - v2.getMontantdesamortissementscumules());
+        lst.add(v2);
+        
         return lst.toArray(new TableauAmortissement[lst.size()]);
     }
 
-    public static TableauAmortissement getLineaire(Integer annee, Double base, Double tauxLineaire) {
+    public static TableauAmortissement getLineaire(Integer annee, Double base, Double tauxLineaire ,Double cumule) {
         TableauAmortissement t = new TableauAmortissement();
         t.setAnnee(annee);
         t.setAnnuite(base * tauxLineaire);
         t.setBase(base);
         t.setTauxLineaire(tauxLineaire);
-        t.setValeurNetteComptable(t.getBase()-t.getAnnuite());
+        t.setMontantdesamortissementscumules(cumule+t.getAnnuite());
+        t.setValeurNetteComptable(t.getBase()-t.getMontantdesamortissementscumules());
         return t;
     }
 
@@ -215,5 +237,13 @@ public class TableauAmortissement {
 
     public void setValeurNetteComptable(Double valeurNetteComptable) {
         this.valeurNetteComptable = valeurNetteComptable;
+    }
+
+    public Double getMontantdesamortissementscumules() {
+        return montantdesamortissementscumules;
+    }
+
+    public void setMontantdesamortissementscumules(Double montantdesamortissementscumules) {
+        this.montantdesamortissementscumules = montantdesamortissementscumules;
     }
 }
