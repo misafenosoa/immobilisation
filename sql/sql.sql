@@ -61,3 +61,24 @@ create table historisationconfiguration(
     foreign key (bienacquisid) references bienacquis(bienacquisid),
     foreign key (naturefille) references nature(natureid)
 );
+
+create table utilisateur(
+    utilisateur text primary key,
+    utilisateurgrade integer
+);
+
+
+-- ato no ahafahana mijery hoe ahoana no emploi du temps ana bien
+create table assignation(
+    assignationid serial primary key,
+    bienacquis text ,
+    utilisateur text,
+    datedebut date ,
+    datefin date ,
+    foreign key (utilisateur) references utilisateur(utilisateur),
+    foreign key (bienacquis) references bienacquis (bienacquisid)
+);
+
+-- view pour voir les biens libres et les biens assignes avec un utilisateur:
+-- create view as 
+

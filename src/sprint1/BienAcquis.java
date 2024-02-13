@@ -95,7 +95,7 @@ public class BienAcquis extends ORM<BienAcquis> {
                 bienacquis.setAnneeamorti(Integer.parseInt(anneeamorti));
                 bienacquis.setAchat(Double.parseDouble(achat));
                 String codeCompta = new Nature().selectWhere(connection, true, "natureId='"+natureid+"'")[0].getCompteCode();
-                bienacquis.setBienacquisid(natureid+"/"+id +"/"+dateacquis+"/"+codeCompta+"/"+villeacquis+"/"+depot);
+                bienacquis.setBienacquisid(natureid+"|"+id +"|"+dateacquis+"|"+codeCompta+"|"+villeacquis+"|"+depot);
                 bienacquis.insert(connection, true);
 
                 for (int i = 0; i < quantite.length; i++) {

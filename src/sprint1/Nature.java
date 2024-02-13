@@ -18,18 +18,19 @@ public class Nature extends ORM<Nature> {
 
         connection = DriverManager.getConnection(url, user, password);
         Nature[] materiels = new Nature().select(connection, false);
-
         StringBuilder options = new StringBuilder();
+        options.append(
+                "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + ">") ;
+
         for (Nature materiel : materiels) {
-            options.append(
-                    "<select class=" + '"' + "form-control" + '"' + "id=" + '"' + "exampleSelectGender" + '"' + ">")
+            options
                     .append("<option value=\"")
                     .append(materiel.getNatureId())
                     .append("\">")
                     .append(materiel.getNature())
-                    .append("</option>")
-                    .append("</select>");
-        }
+                    .append("</option>") ;
+                }
+            options.append("</select>");
 
         return options.toString();
 
